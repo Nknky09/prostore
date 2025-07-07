@@ -16,7 +16,7 @@ const AddToCart = ({ item }: { item: CartItem }) => {
     if (!res.success) {
       toast.error(res.message || "Failed to add item to cart");
     } else {
-      toast.success(`${item.name} added to cart`, {
+      toast.success(res.message, {
         action: (
           <button
             className="inline-flex items-center gap-2 whitespace-nowrap rounded-md bg-primary px-3 py-1 text-white hover:bg-gray-600"
