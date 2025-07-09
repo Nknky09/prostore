@@ -1,8 +1,16 @@
-import { edgeAuth } from "@/auth-edge";
+import { edgeAuth } from "./auth-edge";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const PUBLIC_PATHS = ["/", "/sign-in", "/sign-up", "/api", "/favicon.ico"];
+
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (PUBLIC_PATHS.some(path => pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
+
   const session = await edgeAuth();
 
   if (!session) {
@@ -16,7 +24,6 @@ export async function middleware(request: NextRequest) {
     response.cookies.set("sessionCartId", newCartId, {
       path: "/",
       httpOnly: true,
-      sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });
     console.log("sessionCartId cookie set:", newCartId);
@@ -26,5 +33,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|static|favicon.ico|.*\\..*|api).*)"],
+  matcher: ["/((?!_next|static|.*\\..*).*)"],
 };
